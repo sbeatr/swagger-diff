@@ -13,9 +13,12 @@ public class ElProperty {
     private String el;
 
     private Property property;
+    private Property new_property;
+
 
     // optional change metadata
     private boolean isTypeChange;
+    private boolean isDescriptionChange;
     private boolean newEnums;
     private boolean removedEnums;
 
@@ -25,6 +28,14 @@ public class ElProperty {
 
     public void setProperty(Property property) {
         this.property = property;
+    }
+
+    public Property getNewProperty() {
+        return new_property;
+    }
+
+    public void setNewProperty(Property new_property) {
+        this.new_property = new_property;
     }
 
     public String getEl() {
@@ -43,6 +54,14 @@ public class ElProperty {
         isTypeChange = typeChange;
     }
 
+    public void setDescriptionChange(boolean descriptionChange) {
+        isDescriptionChange = descriptionChange;
+    }
+
+    public boolean isDescriptionChange() {
+        return isDescriptionChange;
+    }
+    
     public boolean isNewEnums() {
         return newEnums;
     }

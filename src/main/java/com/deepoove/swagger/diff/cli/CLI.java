@@ -1,5 +1,8 @@
 package com.deepoove.swagger.diff.cli;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.deepoove.swagger.diff.SwaggerDiff;
@@ -7,6 +10,8 @@ import com.deepoove.swagger.diff.output.HtmlRender;
 import com.deepoove.swagger.diff.output.JsonRender;
 import com.deepoove.swagger.diff.output.MarkdownRender;
 import com.deepoove.swagger.diff.output.Render;
+
+import io.swagger.models.auth.AuthorizationValue;
 
 /**
  * $java -jar swagger-diff.jar -old http://www.petstore.com/swagger.json \n
@@ -42,6 +47,10 @@ public class CLI {
     @Parameter(names = "--version", description = "swagger-diff tool version", help = true, order = 6)
     private boolean v;
 
+
+    @Parameter(names = "-auth", description = "authentication-value", help = true, order = 7)
+    private String value = "";
+
     public static void main(String[] args) {
         CLI cli = new CLI();
         JCommander jCommander = JCommander.newBuilder()
@@ -62,8 +71,22 @@ public class CLI {
             return;
         }
 
-        SwaggerDiff diff = SwaggerDiff.SWAGGER_VERSION_V2.equals(version)
+        SwaggerDiff diff;
+
+        if (!value.isEmpty()){
+            AuthorizationValue auth_value = new AuthorizationValue();
+            auth_value.setType("header");
+            auth_value.setKeyName("Authorization");
+            auth_value.setValue(value);
+            List<AuthorizationValue> auths = new ArrayList<AuthorizationValue>();
+            auths.add(auth_value);
+            diff = SwaggerDiff.compare(oldSpec, newSpec, auths, version);
+        }
+        
+        else {
+            diff = SwaggerDiff.SWAGGER_VERSION_V2.equals(version)
                 ? SwaggerDiff.compareV2(oldSpec, newSpec) : SwaggerDiff.compareV1(oldSpec, newSpec);
+        }
 
         String render = getRender(outputMode).render(diff);
         JCommander.getConsole().println(render);

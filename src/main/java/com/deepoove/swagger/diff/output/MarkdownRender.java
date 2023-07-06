@@ -137,35 +137,56 @@ public class MarkdownRender implements Render {
     private String li_missingProp(ElProperty prop) {
         Property property = prop.getProperty();
         StringBuffer sb = new StringBuffer("");
-        sb.append("Delete ").append(prop.getEl())
-                .append(null == property.getDescription() ? ""
-                        : (" //" + property.getDescription()));
+        sb.append("Deleted: ").append(prop_string(prop));
         return sb.toString();
     }
 
-    private String li_addProp(ElProperty prop) {
-        Property property = prop.getProperty();
+
+    private String prop_string(ElProperty prop) {
         StringBuffer sb = new StringBuffer("");
-        sb.append("Insert ").append(prop.getEl())
-                .append(null == property.getDescription() ? ""
-                        : (" //" + property.getDescription()));
+        Property property = prop.getProperty();
+        String desc = property.getDescription();
+        String description = null == desc ? "" : ("Description: \"" + desc + "\"" );
+        sb.append("          Field: " + prop.getEl() + "\n          ")
+                .append("Type: " + property.getType() + "\n          ")
+                .append(description);
+        return sb.toString();
+
+    }
+
+    private String li_addProp(ElProperty prop) {
+        StringBuffer sb = new StringBuffer("");
+        sb.append("Added: \n").append(prop_string(prop));
         return sb.toString();
     }
 
     private String li_changedProp(ElProperty prop) {
         Property property = prop.getProperty();
-        String prefix = "Modify ";
-        String desc = " //" + property.getDescription();
-        String postfix = (null == property.getDescription() ? "" : desc);
+        Property new_property = prop.getNewProperty();
+
+        String modified = "Modified: \n";
+        String ws = "          ";
+
+        StringBuffer type_string = new StringBuffer("");
+        StringBuffer desc_string = new StringBuffer("");
+
+        if (prop.isTypeChange()) {
+            type_string.append(ws).append("Type changed from " + property.getType() + " to " + new_property.getType());
+        }
+
+        if (prop.isDescriptionChange()) {
+            desc_string.append(ws).append("Description changed from \"" + property.getDescription() + "\" to \"" + new_property.getDescription() + "\"");
+        }
 
         StringBuffer sb = new StringBuffer("");
-        sb.append(prefix).append(prop.getEl())
-                .append(postfix);
+        sb.append(modified).append(type_string).append("\n").append(desc_string);
+
         return sb.toString();
     }
 
     private String ul_param(ChangedOperation changedOperation) {
         List<Parameter> addParameters = changedOperation.getAddParameters();
+
         List<Parameter> delParameters = changedOperation.getMissingParameters();
         List<ChangedParameter> changedParameters = changedOperation
                 .getChangedParameter();

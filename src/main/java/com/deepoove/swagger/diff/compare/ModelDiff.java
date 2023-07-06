@@ -123,6 +123,10 @@ public class ModelDiff {
 
     private ElProperty addChangeMetadata(ElProperty diffProperty, Property left, Property right) {
         diffProperty.setTypeChange(!left.getType().equalsIgnoreCase(right.getType()));
+        String right_desc = null == right.getDescription() ? "" : right.getDescription();
+        String left_desc = null == left.getDescription() ? "" : left.getDescription();
+        diffProperty.setDescriptionChange(!left_desc.equalsIgnoreCase(right_desc));
+        diffProperty.setNewProperty(right);
         List<String> leftEnums = enumValues(left);
         List<String> rightEnums = enumValues(right);
         if (!leftEnums.isEmpty() && !rightEnums.isEmpty()) {
